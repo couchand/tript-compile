@@ -1,0 +1,26 @@
+{
+  "name": "tript-compile",
+  "version": "0.0.1",
+  "description": "An ECMAScript-targeting compiler for the Tript scripting language.",
+  "main": "lib/index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "github.com/couchand/tript-compile"
+  },
+  "author": "Andrew Couch <tript@andrewcou.ch>",
+  "license": "MIT",
+  "dependencies": {
+    "shift-ast": "^3.1.0",
+    "shift-codegen": "^4.0.3",
+    "tript-interp": "0.0.1"
+  },
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "mocha": "^2.4.5",
+    "reserved-words": "^0.1.1",
+    "tript-ast": "0.0.1"
+  }
+}
