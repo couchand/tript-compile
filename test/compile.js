@@ -37,6 +37,22 @@ describe('compile', function() {
           .that.equals(false)
       })
     })
+
+    describe('LiteralNumber', function() {
+      it('returns a LiteralNumericExpression', function() {
+        var result = compile(
+          new ast.LiteralNumber({
+            value: 42
+          })
+        )
+
+        expect(result).to.be.an('object')
+        result.should.have.property('type')
+          .that.equals('LiteralNumericExpression')
+        result.should.have.property('value')
+          .that.equals(42)
+      })
+    })
   })
 
   describe('Reference', function() {
@@ -143,6 +159,126 @@ describe('compile', function() {
         result.right.should.have.property('right')
         result.right.right.should.have.property('type')
           .that.equals('LiteralBooleanExpression')
+      })
+    })
+  })
+
+  describe('numeric expression', function() {
+    function makeNumeric(op, literals) {
+      return new ast[op]({
+        children: literals.map((literal) =>
+          new ast.LiteralNumber({
+            value: literal
+          })
+        )
+      })
+    }
+
+    describe('Sum', function() {
+      it('is literal zero for empty children', function() {
+        var result = compile(
+          makeNumeric('Sum', [])
+        )
+
+        expect(result).to.be.an('object')
+        result.should.have.property('type')
+          .that.equals('LiteralNumericExpression')
+        result.should.have.property('value')
+          .that.equals(0)
+      })
+
+      it('compiles to a binary expression', function() {
+        var result = compile(
+          makeNumeric('Sum', [1, 2, 3])
+        )
+
+        expect(result).to.be.an('object')
+        result.should.have.property('type')
+          .that.equals('BinaryExpression')
+        result.should.have.property('operator')
+          .that.equals('+')
+        result.should.have.property('left')
+          .that.has.property('type')
+          .that.equals('LiteralNumericExpression')
+        result.should.have.property('right')
+          .that.has.property('type')
+          .that.equals('BinaryExpression')
+        result.right.should.have.property('operator')
+          .that.equals('+')
+        result.right.should.have.property('left')
+        result.right.left.should.have.property('type')
+          .that.equals('LiteralNumericExpression')
+        result.right.should.have.property('right')
+        result.right.right.should.have.property('type')
+          .that.equals('LiteralNumericExpression')
+      })
+    })
+
+    describe('Equal', function() {
+      it('is literal true for empty children', function() {
+        var result = compile(
+          makeNumeric('Equal', [])
+        )
+
+        expect(result).to.be.an('object')
+        result.should.have.property('type')
+          .that.equals('LiteralBooleanExpression')
+        result.should.have.property('value')
+          .that.equals(true)
+      })
+
+      it('is literal true for one child', function() {
+        var result = compile(
+          makeNumeric('Equal', [42])
+        )
+
+        expect(result).to.be.an('object')
+        result.should.have.property('type')
+          .that.equals('LiteralBooleanExpression')
+        result.should.have.property('value')
+          .that.equals(true)
+      })
+
+      it('compiles to a two-level binary expression', function() {
+        var result = compile(
+          makeNumeric('Equal', [1, 2, 3])
+        )
+
+        expect(result).to.be.an('object')
+        result.should.have.property('type')
+          .that.equals('BinaryExpression')
+        result.should.have.property('operator')
+          .that.equals('&&')
+        result.should.have.property('left')
+          .that.has.property('type')
+          .that.equals('BinaryExpression')
+        result.left.should.have.property('operator')
+          .that.equals('==')
+        result.left.should.have.property('left')
+          .that.has.property('type')
+          .that.equals('LiteralNumericExpression')
+        result.left.left.should.have.property('value')
+          .that.equals(1)
+        result.left.should.have.property('right')
+          .that.has.property('type')
+          .that.equals('LiteralNumericExpression')
+        result.left.right.should.have.property('value')
+          .that.equals(2)
+        result.should.have.property('right')
+          .that.has.property('type')
+          .that.equals('BinaryExpression')
+        result.right.should.have.property('operator')
+          .that.equals('==')
+        result.right.should.have.property('left')
+          .that.has.property('type')
+          .that.equals('LiteralNumericExpression')
+        result.right.left.should.have.property('value')
+          .that.equals(1)
+        result.right.should.have.property('right')
+          .that.has.property('type')
+          .that.equals('LiteralNumericExpression')
+        result.right.right.should.have.property('value')
+          .that.equals(3)
       })
     })
   })
